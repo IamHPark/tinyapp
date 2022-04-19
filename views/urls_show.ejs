@@ -25,25 +25,24 @@
       <div class="card text-center">
         <div class="card-header"></div>
         <div class="card-body">
-          <h4 class="card-title">Edit</h4>
-
-          <form class="form-inline, card-body">
-            <div class="form-group mb-2" style="display: inline">
-              <label for="newURL">New URL: </label>
+          <h3 class="card-title">Edit</h3>
+          <form
+            class="form-inline"
+            action="/urls/<%= shortURL %>"
+            method="POST"
+            style="margin: auto; display: block"
+          >
+            <div class="form-group mb-2" style="display: block">
+              <label for="longURL" style="display: inline">New URL:</label>
               <input
+                class="form-control"
                 type="text"
-                id="newURL"
-                width="1000px"
-                placeholder="http:// ..."
+                name="longURL"
+                placeholder="http://"
+                style="width: 300px; margin: 1em"
               />
+              <button type="submit" class="btn btn-primary">Submit</button>
             </div>
-            <button
-              type="submit"
-              class="btn btn-primary mb-2"
-              style="display: inline"
-            >
-              Submit
-            </button>
           </form>
         </div>
       </div>
