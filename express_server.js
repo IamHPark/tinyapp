@@ -9,30 +9,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({entended: true}));
-
-app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  res.render('urls_index', templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("OK");
-});
-
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-});
-
-
-app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
-});
-
-
 const generateRandomString = function() {
   let randomString = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -41,10 +17,31 @@ const generateRandomString = function() {
     randomString += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return randomString;
-}
+};
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({entended: true}));
 
+app.get('/urls', (req, res) => {
+  const templateVars = { urls: urlDatabase };
+  res.render('urls_index', templateVars);
+});
 
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/u/${shortURL}`);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  res.render("urls_show", templateVars);
+  res.redirect(urlDatabase[req.params.shortURL]);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
