@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 
@@ -62,6 +64,14 @@ app.post("/urls/edit/:shortURL", (req, res) => {
 // press Delete submit, action to below path, then delete data pair and redirect to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete(urlDatabase[req.params.shortURL])
+  res.redirect("/urls")
+});
+
+// add endpoint for POST to /login
+app.post("/login", (req, res) => {
+  //get username from input?????
+  console.log(req.body);
+  res.cookie('username',req.body.username);
   res.redirect("/urls");
 });
 
@@ -71,6 +81,7 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect("/urls");
 });
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
