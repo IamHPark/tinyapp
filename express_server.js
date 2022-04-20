@@ -26,13 +26,16 @@ app.use(bodyParser.urlencoded({entended: true}));
 
 // client comes in /urls, show the list of urls(urls_index)
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const username = req.cookies["username"];
+  const templateVars = { urls: urlDatabase, username: username };
   res.render('urls_index', templateVars);
 });
 
 // broswer request "Create New URL" , show create form (urls_new)
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const username = req.cookies["username"];
+  const templateVars = { username };
+  res.render("urls_new", templateVars);
 });
 
 // User fills form and press submit
@@ -45,7 +48,8 @@ app.post("/urls", (req, res) => {
 
 // redirected from post above, show ulrs_show.ejs
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const username = req.cookies["username"];
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username };
   res.render("urls_show", templateVars);
 });
 
@@ -78,8 +82,9 @@ app.post("/login", (req, res) => {
 
 // add endpoint for POST to /logout
 app.post("/logout", (req, res) => {
+  console.log("logout");
   res
-    .clearCookie(username)
+    .clearCookie("username")
     .redirect("/urls");
 });
 
