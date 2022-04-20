@@ -6,7 +6,6 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <link rel="stylesheet" href="../css/register.css">
 
     <!-- Bootstrap CSS -->
     <link
@@ -15,15 +14,16 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="../css/register.css">
 
     <title>New URL - TinyApp Example</title>
   </head>
 
   <body>
       <header><%- include('partials/_header'); %></header>
-    <div class="container">
-    <h1 style="margin-top: 5%">Create Your Account!</h1>
-    <form method="POST" action="/register" style="width: 40%;">
+    <div class="container ml-5">
+    <h1>Login</h1>
+    <form method="POST" action="/login" style="width: 40%;">
       <div class="form-group">
         <label for="email">Email address</label>
         <input type="email" id="email" name="email" class="form-control"placeholder="Enter email" >

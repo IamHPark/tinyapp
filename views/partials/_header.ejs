@@ -19,7 +19,12 @@
       </div>
     </div>
 
-    <% if (userID) { %>
+    <% if (!userID) { %>
+    <ul class="nav justify-content-end">
+      <a class="nav-item nav-link" href="/register">Register</a>
+      <a class="nav-item nav-link" href="/login">Login</a>
+    </ul>
+    <% } else { %>
     <p>Logged In As: <%= userID.email %></p>
     <form action="/logout" method="POST">
       <button type="submit" class="btn btn-primary ml-3">Logout</button>
