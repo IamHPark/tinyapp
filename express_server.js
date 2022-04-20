@@ -69,10 +69,18 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // add endpoint for POST to /login
 app.post("/login", (req, res) => {
-  //get username from input?????
-  console.log(req.body);
-  res.cookie('username',req.body.username);
-  res.redirect("/urls");
+  const username = req.body.username;
+  res
+    .cookie('username',req.body.username)
+    .redirect("/urls");
+    // .render("_header" ,username);
+});
+
+// add endpoint for POST to /logout
+app.post("/logout", (req, res) => {
+  res
+    .clearCookie(username)
+    .redirect("/urls");
 });
 
 // press Edit submit, action to below path, then change longURL in a data pair, redirect to /urls
