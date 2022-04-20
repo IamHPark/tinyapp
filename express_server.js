@@ -3,47 +3,94 @@ const app = express();
 const PORT = 8080;
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-
 app.set("view engine", "ejs");
+const bodyParser = require('body-parser');
+const { render } = require('express/lib/response');
+app.use(bodyParser.urlencoded({entended: true}));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
-const generateRandomString = function() {
-  let randomString = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 6; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return randomString;
-};
-
-const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({entended: true}));
-
+// let randomID = Math.random().toString(36).substring(2,8);  //Mentor Help!!!!!!
 const users = {};
 // Tiny app register page
 app.get('/register', (req, res) => {
-  const templateVars = { 'username': req.cookies["username"]}
-  res.render('urls_register');
+  const userID = req.cookies["user_id"];
+  const templateVars = { userID: users[userID] };
+  res.render('urls_register', templateVars);
 })
 
 // when user submit login button
 app.post('/register', (req, res) => {
-  const userID = generateRandomString();
-  users[userID] = {
-    id: userID,
+  //throw 400 error if email or psw is empty
+  const email = req.body.email;
+  const password = req.body.password;
+  if (!email || !password) {
+    return res.status(400).send('<h1>invalid email or password</h1>')
+  }
+  // if email already exist
+  let foundUser = null;
+  for (const userID in users) {
+    const user = users[userID];
+    if (email === user.email) {
+      foundUser = user;
+    }
+  }
+
+  if ( foundUser && email === foundUser.email) {
+    return res.status(400).send('<h1>email is already exsit. please try another email</h1>');
+  }
+
+  const id = Math.random().toString(36).substring(2,8);
+  users[id] = {
+    id: id,
     email: req.body.email,
     password: req.body.password
   }
-  res
-    .cookie('user_id', userID)
-    .redirect('/urls');
+  console.log(users);
+  res.redirect('/login');
 });
 
+
+// add endpoint for login
+app.get("/login", (req, res) => {
+  const userID = req.cookies["user_id"];
+  const templateVars = { userID: users[userID]};
+  res.render('urls_login', templateVars);
+})
+
+// when user login submit
+app.post("/login", (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+
+  // email or password empty : 400
+  if (!email || !password) {
+    return res.status(400).send("<h1>invalid email or password</h1>")
+  }
+
+  let foundUser = null;
+  for (const userID in users) {
+    const user = users[userID];
+    if (email === user.email) {
+      foundUser = user;
+    }
+  }
+
+  // email is not registered
+  if (!foundUser) {
+    return res.status(403).send("<h1>Your email is not registered. Please register first.</h1>")
+  }
+  // password is not correct
+  if (password !== foundUser.password) {
+    return res.status(403).send("<h1>Wrong password</h1>")
+  }
+
+  res.cookie("user_id", foundUser.id).redirect("/urls");
+})
+
+// throw 400 error if email is already exist
 // client comes in /urls, show the list of urls(urls_index)
 app.get('/urls', (req, res) => {
   const userID = req.cookies["user_id"];
@@ -60,7 +107,7 @@ app.get("/urls/new", (req, res) => {
 
 // User fills form and press submit
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString();
+  let shortURL = Math.random().toString(36).substring(2,8);
   //body have a longURL key which is name value in form, update urlDatabase with new URL pair
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
@@ -90,17 +137,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete(urlDatabase[req.params.shortURL])
   res.redirect("/urls")
 });
-
-/*
-// add endpoint for POST to /login
-app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res
-    .cookie('username',req.body.username)
-    .redirect("/urls");
-    // .render("_header" ,username);
-});
-*/
 
 // add endpoint for POST to /logout
 app.post("/logout", (req, res) => {
