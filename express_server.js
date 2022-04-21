@@ -1,12 +1,16 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
+
 app.set("view engine", "ejs");
 const bodyParser = require('body-parser');
-const { render } = require('express/lib/response');
 app.use(bodyParser.urlencoded({entended: true}));
+const { render } = require('express/lib/response');
+
+const bcrypt = require('bcryptjs');
 
 const urlDatabase = {};
 let randomID = () => Math.random().toString(36).substring(2,8);  //Mentor Help!!!!!!
@@ -50,7 +54,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   //throw 400 error if email or psw is empty
   const email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
   if (!email || !password) {
     return res.status(400).send('<h1>invalid email or password</h1>')
   }
@@ -64,10 +68,9 @@ app.post('/register', (req, res) => {
   const id = randomID();
   users[id] = {
     id: id,
-    email: req.body.email,
-    password: req.body.password
+    email: email,
+    password: password
   }
-  // console.log(users);
   res.redirect('/login');
 });
 
@@ -82,7 +85,7 @@ app.get("/login", (req, res) => {
 // when user login submit
 app.post("/login", (req, res) => {
   const email = req.body.email
-  const password = req.body.password
+  const password = bcrypt.hashSync(req.body.password, 10);
 
   // email or password empty : 400
   if (!email || !password) {
@@ -96,7 +99,7 @@ app.post("/login", (req, res) => {
     return res.status(403).send("<h1>Your email is not registered. Please register first.</h1>")
   }
   // password is not correct
-  if (password !== foundUser.password) {
+  if (!bcrypt.compareSync(password, foundUser.password)) {
     return res.status(403).send("<h1>Wrong password</h1>")
   }
 
