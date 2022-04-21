@@ -85,7 +85,7 @@ app.get("/login", (req, res) => {
 // when user login submit
 app.post("/login", (req, res) => {
   const email = req.body.email
-  const password = bcrypt.hashSync(req.body.password, 10);
+  const password = req.body.password;
 
   // email or password empty : 400
   if (!email || !password) {
@@ -99,6 +99,7 @@ app.post("/login", (req, res) => {
     return res.status(403).send("<h1>Your email is not registered. Please register first.</h1>")
   }
   // password is not correct
+  console.log(bcrypt.compareSync(password, foundUser.password));
   if (!bcrypt.compareSync(password, foundUser.password)) {
     return res.status(403).send("<h1>Wrong password</h1>")
   }
