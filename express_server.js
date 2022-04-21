@@ -8,12 +8,37 @@ const bodyParser = require('body-parser');
 const { render } = require('express/lib/response');
 app.use(bodyParser.urlencoded({entended: true}));
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-// let randomID = Math.random().toString(36).substring(2,8);  //Mentor Help!!!!!!
+const urlDatabase = {};
+let randomID = () => Math.random().toString(36).substring(2,8);  //Mentor Help!!!!!!
 const users = {};
+
+// reate a function named urlsForUser(id) which returns the URLs
+// where the userID is equal to the id of the currently logged-in user.
+const urlsForUser = function(id) {
+  let dataForUser = {}
+  for ( const url in urlDatabase) {
+    let shortURL = url;
+    let longURL = urlDatabase[url].longURL
+    if (urlDatabase[url].userID === id) {
+      dataForUser[shortURL] = longURL
+    }
+  }
+  return dataForUser;
+};
+
+const isRegistered = (email) => {
+  let foundUser = null;
+  for (const userID in users) {
+    const user = users[userID];
+    if (email === user.email) {
+      foundUser = user;
+    }
+  }
+  // console.log('foundUser', foundUser);
+  return foundUser;
+}
+
+
 // Tiny app register page
 app.get('/register', (req, res) => {
   const userID = req.cookies["user_id"];
@@ -30,25 +55,19 @@ app.post('/register', (req, res) => {
     return res.status(400).send('<h1>invalid email or password</h1>')
   }
   // if email already exist
-  let foundUser = null;
-  for (const userID in users) {
-    const user = users[userID];
-    if (email === user.email) {
-      foundUser = user;
-    }
-  }
+  const foundUser = isRegistered(email);
 
   if ( foundUser && email === foundUser.email) {
     return res.status(400).send('<h1>email is already exsit. please try another email</h1>');
   }
 
-  const id = Math.random().toString(36).substring(2,8);
+  const id = randomID();
   users[id] = {
     id: id,
     email: req.body.email,
     password: req.body.password
   }
-  console.log(users);
+  // console.log(users);
   res.redirect('/login');
 });
 
@@ -70,14 +89,8 @@ app.post("/login", (req, res) => {
     return res.status(400).send("<h1>invalid email or password</h1>")
   }
 
-  let foundUser = null;
-  for (const userID in users) {
-    const user = users[userID];
-    if (email === user.email) {
-      foundUser = user;
-    }
-  }
-
+  // console.log(isRegistered(email));
+  const foundUser = isRegistered(email);
   // email is not registered
   if (!foundUser) {
     return res.status(403).send("<h1>Your email is not registered. Please register first.</h1>")
@@ -87,14 +100,20 @@ app.post("/login", (req, res) => {
     return res.status(403).send("<h1>Wrong password</h1>")
   }
 
+  // if login success, redirect to /urls
   res.cookie("user_id", foundUser.id).redirect("/urls");
 })
 
-// throw 400 error if email is already exist
 // client comes in /urls, show the list of urls(urls_index)
 app.get('/urls', (req, res) => {
   const userID = req.cookies["user_id"];
-  const templateVars = { urls: urlDatabase, userID: users[userID] };
+  //if not logined, redirect to /urls
+  if (userID === undefined) {
+    return res.send("<h1>You should login first!</h1>");
+  };
+  const dataForUser = urlsForUser(userID);
+  // console.log(dataForUser)
+  const templateVars = { urls: dataForUser, userID: users[userID] };
   res.render('urls_index', templateVars);
 });
 
@@ -107,51 +126,87 @@ app.get("/urls/new", (req, res) => {
 
 // User fills form and press submit
 app.post("/urls", (req, res) => {
-  let shortURL = Math.random().toString(36).substring(2,8);
+  const userID = req.cookies["user_id"];
+  let shortURL = randomID()
   //body have a longURL key which is name value in form, update urlDatabase with new URL pair
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {
+    longURL: req.body.longURL,
+    userID: userID
+  }
+  // console.log(urlDatabase);
+  //if not logged in, send message
+  if (userID === undefined) {
+    return res.send("<h1>You should login first!</h1>");
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 
 // redirected from post above, show ulrs_show.ejs
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["user_id"];
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], userID: users[userID] };
+  const shortURL = req.params.shortURL
+  const longURL = urlDatabase[shortURL].longURL;
+  const templateVars = { shortURL, longURL, userID: users[userID] };
   res.render("urls_show", templateVars);
 });
 
 // User press submit then it links to /u/:shortURL, then redirect to longURL
 app.get("/u/:shortURL", (req, res) => {
-  res.redirect(urlDatabase[req.params.shortURL]);
+  const shortURL = req.params.shortURL
+  // console.log('short', shortURL);
+  const longURL = urlDatabase[shortURL].longURL;
+  // console.log("long", longURL);
+  // console.log(urlDatabase)
+  res.redirect(longURL);
 });
 
-// press Edit submit, redirect to urls_show
-app.post("/urls/edit/:shortURL", (req, res) => {
+// edit in /urls submit, redirect to urls_show
+app.post("/edit/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  console.log(shortURL);
   res.redirect(`/urls/${shortURL}`);
 })
 
 // press Delete submit, action to below path, then delete data pair and redirect to /urls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete(urlDatabase[req.params.shortURL])
+  const shortURL = req.params.shortURL
+
+    // if current userID doens't have the shortURL, return message can't delete
+    const userID = req.cookies['user_id'];
+    const urlsForUserData = urlsForUser(userID);
+    const shortUrlKeys = Object.keys(urlsForUserData);
+    if (!shortUrlKeys.includes(shortURL)) {
+      return res.send("<h1>This is not your URL, You can't edit this!</h1>")
+    }
+
+  delete(urlDatabase[shortURL])
   res.redirect("/urls")
+});
+
+
+// press Edit submit, action to below path, then change longURL in a data pair, redirect to /urls
+app.post("/urls/:id", (req, res) => {
+  // console.log('urls/id', req.params);
+  const shortURL = req.params.id;
+  urlDatabase[shortURL].longURL = req.body.longURL;
+
+  // if current userID doens't have the shortURL, return a message
+  const userID = req.cookies['user_id'];
+  const urlsForUserData = urlsForUser(userID);
+  const shortUrlKeys = Object.keys(urlsForUserData);
+  console.log(shortUrlKeys);
+  // many urls ?
+
+    if (!shortUrlKeys.includes(shortURL)) {
+      return res.send("<h1>This is not your URL, You can't edit this!</h1>")
+    }
+
+  res.redirect("/urls");
 });
 
 // add endpoint for POST to /logout
 app.post("/logout", (req, res) => {
-  res
-    .clearCookie("user_id")
-    .redirect("/urls");
+  res.clearCookie("user_id").redirect("/urls");
 });
-
-// press Edit submit, action to below path, then change longURL in a data pair, redirect to /urls
-app.post("/urls/:id", (req, res) => {
-  const shortURL = req.params.id;
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect("/urls");
-});
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
