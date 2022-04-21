@@ -13,24 +13,10 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({entended: true}));
 
 const bcrypt = require('bcryptjs');
-const { getUserByEmail, randomID, isInUserData } = require('./helpers');
+const { getUserByEmail, randomID, isInUserData, urlsForUser } = require('./helpers');
 
 const urlDatabase = {};  // key: shortURL, value: longURL
 const users = {};  // stored data according to user id key
-
-// where the userID is equal to the id of the currently logged-in user
-// return urls data belong to that user
-const urlsForUser = function(id) {
-  let dataForUser = {};
-  for (const url in urlDatabase) {
-    let shortURL = url;
-    let longURL = urlDatabase[url].longURL;
-    if (urlDatabase[url].userID === id) {
-      dataForUser[shortURL] = longURL;
-    }
-  }
-  return dataForUser;
-};
 
 app.get("/", (req, res) => {
   const userID = req.session.user_id;
@@ -104,7 +90,7 @@ app.get('/urls', (req, res) => {
   if (userID === undefined) {
     return res.send("<h1>You should login first!</h1>");
   }
-  const dataForUser = urlsForUser(userID);
+  const dataForUser = urlsForUser(userID, urlDatabase);
   const templateVars = { urls: dataForUser, userID: users[userID] };
   res.render('urls_index', templateVars);
 });
@@ -138,7 +124,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
   const longURL = urlDatabase[shortURL].longURL;
   const templateVars = { shortURL, longURL, userID: users[userID] };
-    if(!isInUserData(userID, shortURL)) {
+    if(!isInUserData(userID, shortURL, urlDatabase)) {
     return res.send("<h1>This is not your URL, You can't edit this!</h1>");
   }
   res.render("urls_show", templateVars);
@@ -153,11 +139,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-app.post("/edit/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  res.redirect(`/urls/${shortURL}`);
-});
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete(urlDatabase[shortURL]);
@@ -168,7 +149,7 @@ app.post("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   urlDatabase[shortURL].longURL = req.body.longURL;
   const userID = req.session.user_id;
-  if(!isInUserData(userID, shortURL)) {
+  if(!isInUserData(userID, shortURL, urlDatabase)) {
     return res.send("<h1>This is not your URL, You can't edit this!</h1>");
   }
   res.redirect("/urls");

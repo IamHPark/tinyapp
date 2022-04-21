@@ -10,12 +10,28 @@ const getUserByEmail = function(email, database) {
 
 const randomID = () => Math.random().toString(36).substring(2,8);
 
+
+// where the userID is equal to the id of the currently logged-in user
+// return urls data belong to that user
+const urlsForUser = function(id, data) {
+  let dataForUser = {};
+  for (const url in data) {
+    let shortURL = url;
+    let longURL = data[url].longURL;
+    if (data[url].userID === id) {
+      dataForUser[shortURL] = longURL;
+    }
+  }
+  return dataForUser;
+};
 // check if shortURL is included in urlsForUser
-const isInUserData = (userID, shortURL) =>{
-  const urlsForUserData = urlsForUser(userID);
+const isInUserData = (userID, shortURL, data) =>{
+  const urlsForUserData = urlsForUser(userID, data);
+  console.log(urlsForUserData);
   const shortUrlKeys = Object.keys(urlsForUserData);
+  console.log(shortUrlKeys);
   return shortUrlKeys.includes(shortURL) ? true : false;
 };
 
-module.exports = { getUserByEmail, randomID, isInUserData };
+module.exports = { getUserByEmail, randomID, isInUserData, urlsForUser };
 
