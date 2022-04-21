@@ -27,9 +27,7 @@ const urlsForUser = function(id, data) {
 // check if shortURL is included in urlsForUser
 const isInUserData = (userID, shortURL, data) =>{
   const urlsForUserData = urlsForUser(userID, data);
-  console.log(urlsForUserData);
   const shortUrlKeys = Object.keys(urlsForUserData);
-  console.log(shortUrlKeys);
   return shortUrlKeys.includes(shortURL) ? true : false;
 };
 
