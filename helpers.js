@@ -8,5 +8,14 @@ const getUserByEmail = function(email, database) {
   }
 };
 
-module.exports = getUserByEmail;
+const randomID = () => Math.random().toString(36).substring(2,8);
+
+// check if shortURL is included in urlsForUser
+const isInUserData = (userID, shortURL) =>{
+  const urlsForUserData = urlsForUser(userID);
+  const shortUrlKeys = Object.keys(urlsForUserData);
+  return shortUrlKeys.includes(shortURL) ? true : false;
+};
+
+module.exports = { getUserByEmail, randomID, isInUserData };
 

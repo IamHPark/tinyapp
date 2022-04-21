@@ -18,8 +18,8 @@
   </head>
   <body>
     <header><%- include('partials/_header'); %></header>
-    <main style="margin: 1em">
-      <h3>My URLs</h3>
+    <main style="margin: 2em 7em 2em 7em">
+      <h3 class="mb-4">My URLs</h3>
       <table class="table">
         <thead>
           <tr>
@@ -35,7 +35,8 @@
             <td><%= url %></td>
             <td><%= urls[url] %></td>
             <td>
-              <form method="POST" action="/edit/<%= url %>">
+              <!-- <form method="POST" action="/edit/<%= url %>"> -->
+              <form method="GET" action="/urls/<%= url %>">
                 <button type="submit" class="btn btn-primary">Edit</button>
               </form>
             </td>
