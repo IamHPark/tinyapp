@@ -1,19 +1,19 @@
 const express = require('express');
+const methodOverride = require('method-override');
+const cookieSession = require('cookie-session');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
+const { getUserByEmail, randomID, isInUserData, urlsForUser } = require('./helpers');
 const app = express();
 const PORT = 8080;
 
-const cookieSession = require('cookie-session');
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: 'session',
   keys: ['secretkey']
 }));
-
-app.set("view engine", "ejs");
-const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({entended: true}));
-
-const bcrypt = require('bcryptjs');
-const { getUserByEmail, randomID, isInUserData, urlsForUser } = require('./helpers');
+app.set("view engine", "ejs");
 
 const urlDatabase = {};  // key: shortURL, value: longURL
 const users = {};  // stored data according to user id key
@@ -53,7 +53,8 @@ app.post('/register', (req, res) => {
     email: email,
     password: password
   };
-  res.redirect('/login');
+  req.session.user_id = users[id].id;
+  res.redirect('/urls');
 });
 
 app.get("/login", (req, res) => {
@@ -91,7 +92,7 @@ app.get('/urls', (req, res) => {
     return res.send("<h1>You should login first!</h1>");
   }
   const dataForUser = urlsForUser(userID, urlDatabase);
-  const templateVars = { urls: dataForUser, userID: users[userID] };
+  const templateVars = { urls: dataForUser, userID: users[userID], dataAll: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
@@ -110,7 +111,8 @@ app.post("/urls", (req, res) => {
   let shortURL = randomID();
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
-    userID: userID
+    userID: userID,
+    totalVisit: 0
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -132,20 +134,23 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
+  urlDatabase[shortURL].totalVisit += 1;
+
   if (urlDatabase[shortURL] === undefined) {
     return res.send("<h1>This is not a valid Short URL</h1>");
   }
   const longURL = urlDatabase[shortURL].longURL;
+
   res.redirect(longURL);
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   delete(urlDatabase[shortURL]);
   res.redirect("/urls");
 });
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   urlDatabase[shortURL].longURL = req.body.longURL;
   const userID = req.session.user_id;
