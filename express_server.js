@@ -15,6 +15,8 @@ app.use(cookieSession({
 app.use(bodyParser.urlencoded({entended: true}));
 app.set("view engine", "ejs");
 
+app.use(express.static(__dirname + '/public'))
+
 const urlDatabase = {};  // key: shortURL, value: longURL
 const users = {};  // stored data according to user id key
 
