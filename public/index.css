@@ -16,4 +16,19 @@ body {
 
 .btn {
     margin: 40px 0;
+    background-color: #3e92cc;
+    padding: 1rem 3rem;
+
+}
+
+.navbar {
+    background-color: #1d4e89;
+    height: 6rem;
+    font-size: 1.3rem;
+}
+
+.navbar-brand {
+    font-size: 2rem;
+    font-weight: bolder;
+    margin-left: 1.5rem;
 }
