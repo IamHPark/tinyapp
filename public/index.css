@@ -14,7 +14,7 @@ body {
     font-weight: 600;
 }
 
-.btn {
+.main-btn {
     margin: 40px 0;
     background-color: #3e92cc;
     padding: 1rem 3rem;
@@ -31,4 +31,8 @@ body {
     font-size: 2rem;
     font-weight: bolder;
     margin-left: 1.5rem;
+}
+
+.logged {
+    color: white;
 }
