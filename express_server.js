@@ -20,10 +20,12 @@ const users = {};  // stored data according to user id key
 
 app.get("/", (req, res) => {
   const userID = req.session.user_id;
-  if (userID === undefined) {
-    return res.redirect('/login');
-  }
-  res.redirect('/urls');
+  console.log('userID', userID);
+  // if (userID === undefined) {
+  //   return res.redirect('/login');
+  // }
+  const templateVars = { userID: userID}
+  res.render('main', templateVars);
 });
 
 app.get('/register', (req, res) => {
