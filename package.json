@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/IamHPark/tinyapp/issues"
   },
-  "homepage": "https://github.com/IamHPark/tinyapp#readme",
+  "homepage": "https://hs-tinyapp.herokuapp.com/",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
