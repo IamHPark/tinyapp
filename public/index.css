@@ -22,7 +22,6 @@ body {
 
 .navbar {
     background-color: #1d4e89;
-    height: 6rem;
     font-size: 1.3rem;
 }
 
@@ -34,4 +33,14 @@ body {
 
 .logged {
     color: white;
+}
+
+.logout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logout-btn {
+    font-size: 1.3rem;
 }

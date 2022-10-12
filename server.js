@@ -18,15 +18,16 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + '/public'))
 
 const urlDatabase = {};  // key: shortURL, value: longURL
-const users = {};  // stored data according to user id key
+const users = {};  // stored data according to user id key & id, email, pw value
 
 app.get("/", (req, res) => {
   const userID = req.session.user_id;
-  console.log('userID', userID);
+
   // if (userID === undefined) {
   //   return res.redirect('/login');
   // }
-  const templateVars = { userID: userID}
+
+  const templateVars = { user: users[userID]}
   res.render('main', templateVars);
 });
 
@@ -35,20 +36,20 @@ app.get('/register', (req, res) => {
   if (userID) {
     return res.redirect('/urls');
   }
-  const templateVars = { userID: users[userID] };
-  res.render('urls_register', templateVars);
+  const templateVars = { user: users[userID], success: true };
+  res.render('register', templateVars);
 });
 
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = bcrypt.hashSync(req.body.password, 10);
-  if (!email || !password) {
-    return res.status(400).send('<h1>invalid email or password</h1>');
+  if (!email || !req.body.password) {
+    return res.render('register', { user: null, success: false, isExist : false })
   }
 
   const foundUser = getUserByEmail(email, users);
   if (foundUser && email === foundUser.email) {
-    return res.status(400).send('<h1>email is already exsit. please try another email</h1>');
+    return res.render('register', { user: null, success: false, isExist : true })
   }
 
   const id = randomID();
@@ -66,8 +67,8 @@ app.get("/login", (req, res) => {
   if (userID) {
     return res.redirect('/urls');
   }
-  const templateVars = { userID: users[userID]};
-  res.render('urls_login', templateVars);
+  const templateVars = { user: users[userID]};
+  res.render('login', templateVars);
 });
 
 app.post("/login", (req, res) => {
@@ -96,18 +97,18 @@ app.get('/urls', (req, res) => {
     return res.send("<h1>You should login first!</h1>");
   }
   const dataForUser = urlsForUser(userID, urlDatabase);
-  const templateVars = { urls: dataForUser, userID: users[userID], dataAll: urlDatabase };
-  res.render('urls_index', templateVars);
+  const templateVars = { urls: dataForUser, user: users[userID], dataAll: urlDatabase };
+  res.render('index', templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   const userID = req.session.user_id;
-  const templateVars = { userID: users[userID] };
+  const templateVars = { user: users[userID] };
   if (userID === undefined) {
     return res.redirect('/login');
   }
 
-  res.render("urls_new", templateVars);
+  res.render("new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -129,11 +130,11 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 
   const longURL = urlDatabase[shortURL].longURL;
-  const templateVars = { shortURL, longURL, userID: users[userID] };
+  const templateVars = { shortURL, longURL, user: users[userID] };
     if(!isInUserData(userID, shortURL, urlDatabase)) {
     return res.send("<h1>This is not your URL, You can't edit this!</h1>");
   }
-  res.render("urls_show", templateVars);
+  res.render("show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -166,7 +167,7 @@ app.put("/urls/:id", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/urls");
+  res.redirect("/");
 });
 
 app.all('*', (req, res) => {

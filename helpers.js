@@ -1,3 +1,4 @@
+// get user info with login from the database
 const getUserByEmail = function(email, database) {
   let foundUser = null;
   for (const id in database) {
@@ -8,6 +9,7 @@ const getUserByEmail = function(email, database) {
   }
 };
 
+// generate random id
 const randomID = () => Math.random().toString(36).substring(2,8);
 
 
