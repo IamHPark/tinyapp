@@ -67,24 +67,30 @@ app.get("/login", (req, res) => {
   if (userID) {
     return res.redirect('/urls');
   }
-  const templateVars = { user: users[userID]};
+  const templateVars = { user: users[userID], isFilled: true, isRegistered: true, isCorrect: true};
   res.render('login', templateVars);
 });
 
 app.post("/login", (req, res) => {
+  const userID = req.session.user_id;
+  let templateVars = { user: users[userID], isFilled: true, isRegistered: true, isCorrect: true}
   const email = req.body.email;
   const password = req.body.password;
   if (!email || !password) {
-    return res.status(400).send("<h1>invalid email or password</h1>");
+    templateVars = {...templateVars, isFilled: false}
+    return res.render('login', templateVars);
   }
 
   const foundUser = getUserByEmail(email, users);
   if (!foundUser) {
-    return res.status(403).send("<h1>Your email is not registered. Please register first.</h1>");
+    templateVars = {...templateVars, isRegistered: false}
+    return res.render('login', templateVars );
   }
 
   if (!bcrypt.compareSync(password, foundUser.password)) {
-    return res.status(403).send("<h1>Wrong password</h1>");
+    templateVars = {...templateVars, isCorrect: false}
+
+    return res.render('login', templateVars );
   }
 
   req.session.user_id = foundUser.id;

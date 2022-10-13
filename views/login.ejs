@@ -33,6 +33,13 @@
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
+        <% if (!isFilled || !isCorrect) { %>
+          <script>alert("Please enter correct email and password")</script>
+        <% } %>
+
+        <% if (!isRegistered) { %>
+          <script>alert("Please register first")</script>
+        <% } %>
 
 
       <!-- Bootstrap JS -->

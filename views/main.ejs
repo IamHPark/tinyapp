@@ -33,16 +33,166 @@
     <header><%- include('partials/_header'); %></header>
 
     <div class="jumbotron">
-      <h1 class="display-4">Short URL, Easy to Share</h1>
-      <p class="lead">
-        A URL shortener will make you easy to manage and share your favorite
-        websites.
-      </p>
-      <a class="btn btn-primary btn-lg main-btn" href="/urls/new" role="button"
-        >Create New URL</a
-      >
+      <div class="jumbotron-contents">
+        <h1 class="display-4">Short URL, Easy to Share</h1>
+        <p class="lead">
+          A URL shortener will make you easy to manage and share your favorite
+          websites.
+        </p>
+        <a class="btn btn-lg main-btn" href="/urls/new" role="button"
+          >Create New URL</a
+        >
+      </div>
     </div>
 
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <img src="img/easy.png" alt="" class="card-img" />
+            <h3 class="card-title">Easy to use</h3>
+            <p class="card-text">
+              ShortURL is easy and fast, enter the long link to get your
+              shortened link
+            </p>
+            <a href="#" class="btn card-btn">Learn more</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <img src="img/link.png" alt="" class="card-img" />
+            <h3 class="card-title">Shortened URLs</h3>
+            <p class="card-text">
+              Use any link, no matter what size, ShortURL always shortens
+            </p>
+            <a href="#" class="btn card-btn">Learn more</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <img src="img/statistics.png" alt="" class="card-img" />
+            <h3 class="card-title">Statistics</h3>
+            <p class="card-text">
+              Check the amount of clicks that your shortened url received
+            </p>
+            <a href="#" class="btn card-btn">Learn more</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- collapse FAQ -->
+    <h2 class="faq">Frequently Asked Questions</h2>
+    <div class="accordion" id="accordionExample">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h2 class="mb-0">
+            <button
+              class="btn btn-link btn-block text-left"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseOne"
+              aria-expanded="false"
+              aria-controls="collapseOne"
+            >
+              What is a URL shortener?
+            </button>
+          </h2>
+        </div>
+
+        <div
+          id="collapseOne"
+          class="collapse"
+          aria-labelledby="headingOne"
+          data-parent="#accordionExample"
+        >
+          <div class="card-body">
+            A URL shortener, also known as a link shortener, seems like a simple
+            tool, but it is a service that can have a dramatic impact on your
+            marketing efforts. Link shorteners work by transforming any long URL
+            into a shorter, more readable link. When a user clicks the shortened
+            version, they're automatically forwarded to the destination URL.
+            Think of a short URL as a more descriptive and memorable nickname
+            for your long webpage address. You can, for example, use a short URL
+            like bit.ly/CelebrateBitly so people will have a good idea about
+            where your link will lead before they click it. If you're
+            contributing content to the online world, you need a URL shortener.
+            Make your URLs stand out with our easy to use free link shortener
+            above.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h2 class="mb-0">
+            <button
+              class="btn btn-link btn-block text-left collapsed"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseTwo"
+              aria-expanded="false"
+              aria-controls="collapseTwo"
+            >
+              Benefits of a short URL?
+            </button>
+          </h2>
+        </div>
+        <div
+          id="collapseTwo"
+          class="collapse"
+          aria-labelledby="headingTwo"
+          data-parent="#accordionExample"
+        >
+          <div class="card-body">
+            How many people can even remember a long web address, especially if
+            it has tons of characters and symbols? A short URL can make your
+            link more memorable. Not only does it allow people to easily recall
+            and share your link with others, it can also dramatically improve
+            traffic to your content. On a more practical side, a short URL is
+            also easier to incorporate into your collateral - whether you're
+            looking to engage with your customers offline or online. Bitly is
+            the best URL shortener for everyone, from influencers to small
+            brands to large enterprises, who are looking for a simple way to
+            create, track and manage their links.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h2 class="mb-0">
+            <button
+              class="btn btn-link btn-block text-left collapsed"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseThree"
+              aria-expanded="false"
+              aria-controls="collapseThree"
+            >
+              Why choose Tinyapp?
+            </button>
+          </h2>
+        </div>
+        <div
+          id="collapseThree"
+          class="collapse"
+          aria-labelledby="headingThree"
+          data-parent="#accordionExample"
+        >
+          <div class="card-body">
+            Whether you're sharing one link or scan or millions, our platform
+            was built to help you make every point of connection between your
+            content and your audience ignite action. It's why the most
+            recognized brands in the world love our platform.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer><%- include('partials/_footer'); %></footer>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
