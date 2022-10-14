@@ -76,7 +76,7 @@ body {
     font-size: 1.3rem;
 }
 
-.card {
+.main-card {
     border-radius: 20px;
     border: 4px solid #edf2f4;
 }
@@ -116,7 +116,7 @@ body {
 .accordion {
     width: 70%;
     max-width: 1200px;
-    margin: 0 auto 100px;
+    margin: 0 auto 300px;
 }
 
 .text-left {
@@ -125,12 +125,43 @@ body {
 }
 
 
+.create-url-container {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 10vh;
+    background-color: #f0f7ff;
+    padding: 5vh;
+    border-radius: 20px;
+}
+
+.form-inline {
+    margin-top: 3vh;
+}
+.create-header {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.edit-card {
+    width: 50%;
+    margin: 5vh auto 2vh;
+}
+.show-url {
+    font-size: 1.7rem;
+}
+
 /* footer  */
 footer {
     background-color: #eeeeee;
     width: 100%;
     box-sizing: border-box;
     padding: 10px;
+    position: fixed;
+    bottom: 0;
 }
 
 i {

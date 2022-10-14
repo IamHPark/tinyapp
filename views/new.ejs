@@ -18,16 +18,14 @@
     <!-- CSS link -->
     <link rel="stylesheet" href="/index.css" />
 
-    <title>New URL - TinyApp Example</title>
+    <title>Tiny App</title>
   </head>
 
   <body>
     <%- include('partials/_header') %>
 
-    <main
-      style="width: 40%; justify-content: center; margin: auto; margin-top: 3vh"
-    >
-      <h3>Create TinyURL</h3>
+    <main class="create-url-container">
+      <h3 class="create-header">Shorten your URLs</h3>
       <form class="form-inline" action="/urls" method="POST">
         <div class="form-group mb-2">
           <label for="longURL">Enter a URL:</label>
